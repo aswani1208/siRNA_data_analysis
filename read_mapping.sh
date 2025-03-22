@@ -18,6 +18,7 @@ gunzip Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa.gz
 
 bowtie2-build  Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa Solanum_tuberosum.SolTub_3.0.dna.toplevel_index
 
+# Read mapping with reference genome
 while read SRA; do
     bowtie2 -x Solanum_tuberosum.SolTub_3.0.dna.toplevel_index \
     -U /workspace/siRNA_data_analysis/trimmed_fastqc/"$SRA"*"_trimmed_filtered.fastq.gz" \
