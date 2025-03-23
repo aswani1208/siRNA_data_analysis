@@ -43,22 +43,29 @@ bowtie-build Solanum_tuberosum_hairpin.fa Solanum_tuberosum_hairpin_index
 bowtie-build hairpin_stu.fa hairpin_stu_index
 bowtie-build mature_stu.fa mature_stu_index
 
-# build bowtie index of the genome 
-
-bowtie-build ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel_index
-
 #fastq to fasta
 
 while read SRA; do 
 seqkit fq2fa ~/rna_seq_analysis/ref_dataset/trimmed_fastqc/"$SRA"_trimmed_filtered.fastq.gz -o "$SRA"_trimmed.fasta; 
 done < ~/rna_seq_analysis/ref_dataset/sra_data/SRR_Acc_List.txt
 
-sed 's/^\([^ ]*\).*$/\1/' SRR26332881_trimmed.fasta > fixed_SRR26332881_trimmed.fasta
+# Reduce the header description in the fasta file
+
+sed -i 's/ /_/g' ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa
+sed -E 's/>(CM[0-9]+\.[0-9]+|MU[0-9]+\.[0-9]+).*/>\1/' ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa > fixed_genome.fa
+
+# build bowtie index of the genome 
+
+bowtie-build fixed_genome.fa fixed_genome_index
 
 # process reads and map them to the genome.
 
-mapper.pl ~/rna_seq_analysis/cacao_mirna_analysis/sra_data/SRR26332880.fasta -c -j -l 18 -m -p ~/rna_seq_analysis/cacao_mirna_analysis/alignment/Theobroma_cacao_index -s ~/rna_seq_analysis/cacao_mirna_analysis/alignment/SRR26332880_processed_reads.fa -t ~/rna_seq_analysis/cacao_mirna_analysis/alignment/SRR26332880_reads_vs_genome.arf -v 
+while read SRA; do 
+mapper.pl "$SRA"_trimmed.fasta -c -j -l 18 -m -p fixed_genome_index -s "$SRA"_processed_reads.fa -t "$SRA"_reads_vs_genome.arf -v;
+done < ~/rna_seq_analysis/ref_dataset/sra_data/SRR_Acc_List.txt
 
+
+# miRDeep2 mapper
 
 mapper.pl ~/rna_seq_analysis/cacao_mirna_analysis/sra_data/SRR26332880.fasta -c -j -k -l 18 -m -p fixed_genome.fa -s SRR26332880reads_collapsed.fa -t SRR26332880reads_collapsed_vs_genome.arf -v
 
@@ -73,11 +80,6 @@ mapper.pl fixed_SRR26332883_trimmed.fasta -c -j -l 18 -m -p fixed_genome_index -
 
 sed -i 's/ /_/g' ~/rna_seq_analysis/cacao_mirna_analysis/alignment/Theobroma_cacao.fa
 
-# reduce header description
-
-#sed -E 's/^(>[^:]+).*/\1/' ~/rna_seq_analysis/cacao_mirna_analysis/alignment/Theobroma_cacao.fa > fixed_genome.fa
-sed -E 's/^(>[^:]+)[^ ]*/\1/' ~/rna_seq_analysis/cacao_mirna_analysis/alignment/Theobroma_cacao.fa | sed 's/_dna//' > fixed_genome.fa
-grep ">" fixed_genome.fa
 
 #Explanation
 s/^(>[^:]+).*/\1/
