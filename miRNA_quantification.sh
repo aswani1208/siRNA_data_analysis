@@ -29,3 +29,19 @@ wget https://www.pmiren.com/ftp-download/Solanum_tuberosum_Stu/Solanum_tuberosum
 
 wget https://www.mirbase.org/download/hairpin.fa
 wget https://www.mirbase.org/download/mature.fa
+
+# Extract miRNA
+extract_miRNAs.pl hairpin.fa tcc > hairpin_tcc.fa
+extract_miRNAs.pl mature.fa tcc > mature_tcc.fa
+
+# build bowtie index for miRNA seq from pimREN and mirbase
+bowtie-build Solanum_tuberosum_mature.fa Solanum_tuberosum_mature_index
+bowtie-build Solanum_tuberosum_hairpin.fa Solanum_tuberosum_hairpin_index
+
+bowtie-build hairpin_tcc.fa hairpin_tcc_index
+bowtie-build mature_tcc.fa mature_tcc_index
+
+# build bowtie index of the genome 
+bowtie-build ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTub_3.0.dna.toplevel_index
+
+
