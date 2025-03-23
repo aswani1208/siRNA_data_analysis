@@ -17,3 +17,15 @@ bash run_tut.sh
 cd ..
 cd src
 perl miRDeep2.pl --version
+
+# Download the miRNA files for Solanum tuberosum
+
+# From pimREN
+
+wget https://www.pmiren.com/ftp-download/Solanum_tuberosum_Stu/Solanum_tuberosum_mature.fa
+wget https://www.pmiren.com/ftp-download/Solanum_tuberosum_Stu/Solanum_tuberosum_hairpin.fa
+
+# From mirBase
+
+wget https://www.mirbase.org/download/hairpin.fa
+wget https://www.mirbase.org/download/mature.fa
