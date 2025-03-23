@@ -49,7 +49,9 @@ bowtie-build ~/rna_seq_analysis/ref_dataset/read_mapping/Solanum_tuberosum.SolTu
 
 #fastq to fasta
 
-seqkit fq2fa ~/rna_seq_analysis/cacao_mirna_analysis/Fastqc/SRR26332880_trimmed.fastq.gz -o SRR26332880_trimmed.fasta
+while read SRA; do 
+seqkit fq2fa ~/rna_seq_analysis/ref_dataset/trimmed_fastqc/"$SRA"_trimmed_filtered.fastq.gz -o "$SRA"_trimmed.fasta; 
+done < ~/rna_seq_analysis/ref_dataset/sra_data/SRR_Acc_List.txt
 
 sed 's/^\([^ ]*\).*$/\1/' SRR26332881_trimmed.fasta > fixed_SRR26332881_trimmed.fasta
 
